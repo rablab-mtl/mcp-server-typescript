@@ -2,31 +2,43 @@
   // Tell editors / Wrangler what to validate against
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "dataforseo-mcp-worker",
-  "main": "build/worker/worker/index-worker.js",
+  "main": "build/worker/worker/index-worker-oauth.js",
   "compatibility_date": "2025-07-05",
   "compatibility_flags": ["nodejs_compat"],
   "minify": true,
+  "secrets": {
+    "required": [
+      "DATAFORSEO_USERNAME",
+      "DATAFORSEO_PASSWORD",
+      "GOOGLE_CLIENT_ID",
+      "GOOGLE_CLIENT_SECRET"
+    ]
+  },
   "vars": {
-    "DATAFORSEO_USERNAME": "YOUR_LOGIN",
-    "DATAFORSEO_PASSWORD": "YOUR_PASSWORD",
     "ENABLED_MODULES": null,
     "DATAFORSEO_FULL_RESPONSE": "false",
-	"DATAFORSEO_SIMPLE_FILTER":"false"
+    "DATAFORSEO_SIMPLE_FILTER": "true",
+    "ALLOWED_EMAILS": "ppc.rablab@gmail.com",
+    "ALLOWED_DOMAINS": ""
   },
-  	"durable_objects": {
-		"bindings": [
-			{
-				"class_name": "DataForSEOMcpAgent",
-				"name": "MCP_OBJECT"
-			}
-		]
-	},
-  	"migrations": [
-		{
-			"new_sqlite_classes": [
-				"DataForSEOMcpAgent"
-			],
-			"tag": "v1"
-		}
-	],
+  "durable_objects": {
+    "bindings": [
+      {
+        "class_name": "DataForSEOMcpAgent",
+        "name": "MCP_OBJECT"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "new_sqlite_classes": ["DataForSEOMcpAgent"],
+      "tag": "v1"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "OAUTH_KV",
+      "id": "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+    }
+  ]
 }
