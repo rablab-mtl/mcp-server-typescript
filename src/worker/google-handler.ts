@@ -76,7 +76,7 @@ function renderDeniedPage(email: string): string {
   <div class="card">
     <h1>Acces refuse</h1>
     <p>Le compte <code>${escapeHtml(email)}</code> n'est pas autorise a utiliser ce serveur MCP.</p>
-    <p>Contacte l'administrateur de Rablab si tu penses que c'est une erreur.</p>
+    <p>Contacte l'administrateur si tu penses que c'est une erreur.</p>
   </div>
 </body>
 </html>`;
@@ -98,11 +98,11 @@ function escapeHtml(s: string): string {
 app.get("/", (c) => {
   return c.html(`<!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8" />
-<title>DataForSEO MCP (Rablab)</title>
+<title>DataForSEO MCP</title>
 <style>body{font-family:system-ui;color:#26372b;max-width:680px;margin:3rem auto;padding:0 1.5rem;line-height:1.6}
 h1{color:#ec662a}code{background:#f5f5f5;padding:.15rem .4rem;border-radius:4px}</style>
 </head><body>
-<h1>DataForSEO MCP (Rablab)</h1>
+<h1>DataForSEO MCP</h1>
 <p>Serveur Model Context Protocol pour DataForSEO. Acces restreint via Google OAuth.</p>
 <p>Endpoint MCP : <code>/mcp</code> (auth requise)</p>
 <p>Health : <code>/health</code></p>

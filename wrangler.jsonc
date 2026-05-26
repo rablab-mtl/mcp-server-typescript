@@ -14,12 +14,16 @@
       "GOOGLE_CLIENT_SECRET"
     ]
   },
+  // ALLOWED_EMAILS and ALLOWED_DOMAINS are configured directly in the
+  // Cloudflare dashboard (Settings -> Variables and Secrets), so they do
+  // not appear in this committed file. The `keep_vars: true` flag tells
+  // Wrangler to preserve dashboard-set variables at deploy time. See
+  // README.md for setup instructions.
+  "keep_vars": true,
   "vars": {
     "ENABLED_MODULES": null,
     "DATAFORSEO_FULL_RESPONSE": "false",
-    "DATAFORSEO_SIMPLE_FILTER": "true",
-    "ALLOWED_EMAILS": "ppc.rablab@gmail.com",
-    "ALLOWED_DOMAINS": ""
+    "DATAFORSEO_SIMPLE_FILTER": "true"
   },
   "durable_objects": {
     "bindings": [

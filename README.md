@@ -2,18 +2,18 @@
 
 Model Context Protocol (MCP) server implementation for DataForSEO, enabling AI assistants to interact with selected DataForSEO APIs and obtain SEO data through a standardized interface.
 
-> **Fork Rablab.** This repository is a fork of [dataforseo/mcp-server-typescript](https://github.com/dataforseo/mcp-server-typescript) maintained by [Rablab](https://rablab.ca), with **Google OAuth** added on top of the Cloudflare Worker deployment for secure multi-user access. See [Rablab fork additions](#rablab-fork-additions) below.
+> **OAuth-protected fork.** This repository is a fork of [dataforseo/mcp-server-typescript](https://github.com/dataforseo/mcp-server-typescript) with **Google OAuth** added on top of the Cloudflare Worker deployment for secure multi-user access. See [OAuth fork additions](#oauth-fork-additions) below.
 
-## Rablab fork additions
+## OAuth fork additions
 
-The upstream DataForSEO MCP server has no authentication on its Cloudflare Worker endpoints. Anyone who finds the URL can use the deployed worker and burn the DataForSEO quota of the owner. To address this for internal Rablab use (and any other team), this fork adds:
+The upstream DataForSEO MCP server has no authentication on its Cloudflare Worker endpoints. Anyone who finds the URL can use the deployed worker and burn the DataForSEO quota of the owner. To address this for internal team use, this fork adds:
 
 - **Google OAuth 2.0 sign-in** in front of the `/mcp` and `/sse` MCP endpoints, powered by [`@cloudflare/workers-oauth-provider`](https://github.com/cloudflare/workers-oauth-provider).
-- **Email and domain allowlist** via `ALLOWED_EMAILS` and `ALLOWED_DOMAINS` secrets, so only authorized accounts can mint an MCP token.
-- **Branded access-denied page** for users outside the allowlist (Rablab colors).
+- **Email and domain allowlist** via `ALLOWED_EMAILS` and `ALLOWED_DOMAINS` env variables, so only authorized accounts can mint an MCP token.
+- **Branded access-denied page** for users outside the allowlist (customizable colors in `google-handler.ts`).
 - **Dynamic Client Registration (DCR)** support so the worker is compatible with Lovable Chat connectors, Cowork, MCP Inspector, and any modern MCP client.
 - **Snake_case OAuth token exchange** body as required by Google (the rest of the code is unchanged).
-- DataForSEO credentials (username and password) are still kept as Cloudflare secrets server-side, never sent to the MCP client.
+- DataForSEO credentials (username and password) are kept as Cloudflare secrets server-side, never sent to the MCP client.
 
 The MCP tools themselves and their behavior are identical to the upstream DataForSEO server.
 
@@ -28,10 +28,15 @@ Set the following secrets on your Cloudflare Worker using `wrangler secret put`:
 | `GOOGLE_CLIENT_ID` | OAuth 2.0 Client ID from Google Cloud Console (Web Application type) |
 | `GOOGLE_CLIENT_SECRET` | OAuth 2.0 Client Secret |
 | `COOKIE_ENCRYPTION_KEY` | Any random 32-char hex string, used by the OAuth Provider library |
-| `ALLOWED_EMAILS` | Optional. Comma-separated list of full email addresses allowed to authenticate |
-| `ALLOWED_DOMAINS` | Optional. Comma-separated list of domains. Any email ending with `@domain` is allowed |
 
-`ALLOWED_EMAILS` and `ALLOWED_DOMAINS` are additive: an email is allowed if it matches either list. At least one of the two should be set, otherwise no one can sign in.
+Set the allowlist as **Plaintext Environment Variables** via the Cloudflare dashboard (Settings -> Variables and Secrets -> Add -> Plaintext) :
+
+| Variable | What it is |
+|---|---|
+| `ALLOWED_EMAILS` | Comma-separated list of full email addresses allowed to authenticate (e.g. `alice@example.com,bob@example.com`) |
+| `ALLOWED_DOMAINS` | Comma-separated list of domains. Any email ending with `@domain` is allowed (e.g. `example.com`) |
+
+`ALLOWED_EMAILS` and `ALLOWED_DOMAINS` are additive: an email is allowed if it matches either list. At least one of the two must be set, otherwise no one can sign in. They are stored in the dashboard rather than in the repo so they can be reviewed and updated without committing email lists to source control.
 
 ### Required Google Cloud setup
 
@@ -45,7 +50,7 @@ Set the following secrets on your Cloudflare Worker using `wrangler secret put`:
 ### Deploy the OAuth-protected build
 
 ```bash
-git clone https://github.com/rablab-mtl/mcp-server-typescript.git
+git clone https://github.com/<your-org>/mcp-server-typescript.git
 cd mcp-server-typescript
 npm install
 npm run build
@@ -56,8 +61,12 @@ npx wrangler secret put DATAFORSEO_PASSWORD
 npx wrangler secret put GOOGLE_CLIENT_ID
 npx wrangler secret put GOOGLE_CLIENT_SECRET
 npx wrangler secret put COOKIE_ENCRYPTION_KEY        # e.g. openssl rand -hex 32
-npx wrangler secret put ALLOWED_EMAILS                # optional
-npx wrangler secret put ALLOWED_DOMAINS               # optional, e.g. rablab.ca
+
+# Set the allowlist as Plaintext environment variables via the Cloudflare
+# dashboard (Settings -> Variables and Secrets -> Add -> Plaintext) :
+#   ALLOWED_EMAILS=alice@example.com,bob@example.com
+#   ALLOWED_DOMAINS=example.com
+# At least one of the two must be set, otherwise no one can sign in.
 
 # Deploy
 npx wrangler deploy --main build/index-worker-oauth.js
