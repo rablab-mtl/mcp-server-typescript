@@ -6,14 +6,10 @@
   "compatibility_date": "2025-07-05",
   "compatibility_flags": ["nodejs_compat"],
   "minify": true,
-  "secrets": {
-    "required": [
-      "DATAFORSEO_USERNAME",
-      "DATAFORSEO_PASSWORD",
-      "GOOGLE_CLIENT_ID",
-      "GOOGLE_CLIENT_SECRET"
-    ]
-  },
+  // Required secrets (set via the Cloudflare dashboard or `npx wrangler secret put NAME`) :
+  //   DATAFORSEO_USERNAME, DATAFORSEO_PASSWORD, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, COOKIE_ENCRYPTION_KEY
+  // Required plaintext env vars (set via the Cloudflare dashboard) :
+  //   ALLOWED_EMAILS (and/or ALLOWED_DOMAINS)
   // ALLOWED_EMAILS and ALLOWED_DOMAINS are configured directly in the
   // Cloudflare dashboard (Settings -> Variables and Secrets), so they do
   // not appear in this committed file. The `keep_vars: true` flag tells
